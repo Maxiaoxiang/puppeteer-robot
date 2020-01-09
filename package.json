@@ -1,0 +1,28 @@
+{
+  "name": "puppeteer-robot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "chalk": "^3.0.0",
+    "es6-promise": "^4.2.8",
+    "md5": "^2.2.1",
+    "puppeteer": "^2.0.0",
+    "request": "^2.88.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git https://github.com/Maxiaoxiang/puppeteer-robot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Maxiaoxiang/puppeteer-robot/issues"
+  },
+  "homepage": "https://github.com/Maxiaoxiang/puppeteer-robot#readme"
+}
