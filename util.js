@@ -1,6 +1,6 @@
 const util = {
   // 添加时间格式化（fmt:yyyy-MM-dd hh:mm:ss）
-  Format (date, fmtStr) {
+  Format(date, fmtStr) {
     Date.prototype.Format = function (fmt) {
       var o = {
         "M+": this.getMonth() + 1, //月份
@@ -17,6 +17,12 @@ const util = {
       return fmt;
     };
     return date.Format(fmtStr);
+  },
+  //获取随机数
+  getRandomIntInclusive(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min; //含最大值，含最小值
   }
 };
 

@@ -1,0 +1,1 @@
+cd e:\github\puppeteer-robot\ && npm start

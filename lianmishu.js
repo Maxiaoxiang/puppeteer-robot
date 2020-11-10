@@ -11,7 +11,7 @@ const _CONFIG = {
   page_size: 10, //页数
   time: util.Format(new Date(), 'yyyyMMddhhmmss'), //时间
   count: 100, //条数
-  page: 10
+  page: 2
 };
 
 //拉取npm启动入参
@@ -33,19 +33,23 @@ let api = {
   //登录
   async login() {
     log('登录中');
-    apiHelper.getApi({
-      method: 'POST',
-      url: _CONFIG.base_url + '/admin/login',
-      data: {
-        username: 'test',
-        password: md5('666666a')
-      }
-    }).then(res => {
-      if (res.code === 0) {
-        log(chalk.green('登录成功'));
-      } else {
-        log(chalk.red(res.msg));
-      }
+    return new Promise((resolve, reject) => {
+      apiHelper.getApi({
+        method: 'POST',
+        url: _CONFIG.base_url + '/admin/login',
+        data: {
+          username: 'test',
+          password: md5('666666a')
+        }
+      }).then(res => {
+        if (res.code === 0) {
+          log(chalk.green('登录成功'));
+          resolve();
+        } else {
+          log(chalk.red(res.msg));
+          reject();
+        }
+      }).finally(() => reject());
     });
   },
   //添加快讯
@@ -61,25 +65,33 @@ let api = {
         category_id: 9
       };
     });
-    apiHelper.getJsonApi({
-      method: 'POST',
-      url: _CONFIG.base_url + '/admin/article',
-      data: list
-    }).then(res => {
-      if (res.code === 0) {
-        log(chalk.green('写入成功'));
-      } else {
-        log(chalk.red(res.msg));
-      }
+    return new Promise(resolve => {
+      apiHelper.getJsonApi({
+        method: 'POST',
+        url: _CONFIG.base_url + '/admin/article',
+        data: list
+      }).then(res => {
+        if (res.code === 0) {
+          log(chalk.green('写入成功'));
+          resolve();
+        } else {
+          log(chalk.red(res.msg));
+        }
+      });
     });
   },
   //抓取快讯
   async getNews() {
-    log(chalk.yellow(`正在抓取第${_CONFIG.page}页`));
-    return apiHelper.getApi({
-      method: 'GET',
-      url: `https://lianmishu.com/wapi/kuaixun/list/?time=${_CONFIG.time}&type=down&pagesize=${_CONFIG.page_size}&sourceid=-1`,
-    });
+    log(chalk.yellow(`正在抓取`));
+    log('url:',`https://lianmishu.com/wapi/kuaixun/list/?time=${_CONFIG.time}&type=down&pagesize=${_CONFIG.page_size}&sourceid=-1`)
+    return new Promise((resolve, reject) => {
+      apiHelper.getApi({
+        method: 'GET',
+        url: `https://lianmishu.com/wapi/kuaixun/list/?time=${_CONFIG.time}&type=down&pagesize=${_CONFIG.page_size}&sourceid=-1`,
+      }).then(res => {
+        resolve(res);
+      });
+    }).catch((e) => {chalk.red(e)});
   }
 };
 
@@ -88,17 +100,21 @@ let api = {
   const page = await browser.newPage();
   log(chalk.green('服务启动成功'));
   api.init();
-  // await api.login();
+  await api.login();
   let list = [];
   log('开始抓取数据');
-  // for (let i = 1; i < _CONFIG.page; i++) {
-  //   const news = await api.getNews();
+  let news = await api.getNews();
+  list.push(news.data);
+  // await Promise.all([1, 2, 3].map(async (i) => {
+  //   let news = await api.getNews();
+  //   if (news.length) {
+  //     list.push(...news.data);
+  //   }
   //   await page.waitFor(1000);
-  //   list.push(news.data);
-  // }
+  // }));
   log('抓取数据结束');
   log(list);
-  // await api.addNews(news.data);
+  await api.addNews(list);
   log(chalk.green('服务关闭'));
   await browser.close();
 })();
